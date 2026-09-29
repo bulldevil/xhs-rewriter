@@ -75,18 +75,19 @@ def cmd_check(args):
             if len(r) != 6:
                 problems.append(f"第{i}行：列数={len(r)}，应为6")
                 continue
-            # 源笔记本身没有标题时：对标标题/标题1/标题2 三列整体留空属正常，
-            # 但必须三者一致（不能只留空一部分），正文三列仍不得为空。
+            # 源笔记本身没有标题时：「对标标题」留空属正常（锚点保真），
+            # 但标题1/标题2 必须据正文补齐，不得为空。
             bare_title = not r[0].strip()
             if bare_title:
                 no_title_rows.append(i)
-                if r[1].strip() or r[2].strip():
-                    problems.append(
-                        f"第{i}行：「对标标题」为空（源笔记无标题），但标题1/标题2有内容，应一并留空")
+                for idx in (1, 2):
+                    if not r[idx].strip():
+                        problems.append(
+                            f"第{i}行：源笔记无标题（「对标标题」留空），但「{COLUMNS[idx]}」未据正文补齐")
             for c, v in zip(COLUMNS, r):
                 if v.strip():
                     continue
-                if bare_title and c in ("对标标题", "标题1", "标题2"):
+                if bare_title and c == "对标标题":
                     continue
                 problems.append(f"第{i}行：「{c}」为空")
 
@@ -98,7 +99,7 @@ def cmd_check(args):
         for x in problems:
             print("  -", x)
         sys.exit(1)
-    hint = f"，其中 {len(no_title_rows)} 行源笔记无标题（标题列按规则留空）" if no_title_rows else ""
+    hint = f"，其中 {len(no_title_rows)} 行源笔记无标题（「对标标题」留空，「标题1/标题2」已据正文补齐）" if no_title_rows else ""
     print(f"✅ 校验通过：{n_data} 行 × 6 列，表头正确，无意外空单元格{hint}")
 
 

@@ -53,9 +53,19 @@ def main():
     skipped = 0
     for i, row in enumerate(rows, 1):
         for name, ref_col, c1, c2 in PAIRS:
-            # 源笔记本身没有标题时，标题列整体留空，无版本可比对，跳过而非判偏离。
+            # 源笔记本身没有标题时：「对标标题」留空，「标题1/标题2」据正文补齐，
+            # 仅比对两版本间差异，不与空对标比贴合度（无从比照）。
             if name == "标题" and not (row.get(ref_col) or "").strip():
-                print(f"行{i:>2} {name}: 源笔记无标题，标题列留空，跳过比对")
+                inter = sim(row.get(c1), row.get(c2))
+                if inter >= 0.999:
+                    verdict = "❌ 两版本完全相同"
+                    bad += 1
+                elif inter > args.max_same:
+                    verdict = "⚠️ 两版本过于接近"
+                    warn += 1
+                else:
+                    verdict = "✅"
+                print(f"行{i:>2} {name}: 源笔记无标题（据正文补题），版本间={inter:.2f}  {verdict}")
                 skipped += 1
                 continue
             inter = sim(row.get(c1), row.get(c2))
@@ -73,7 +83,7 @@ def main():
                 verdict = "✅"
             print(f"行{i:>2} {name}: 版本间={inter:.2f} 与对标最高={keep:.2f}  {verdict}")
 
-    tail = f"，跳过标题比对 {skipped} 处（源笔记无标题）" if skipped else ""
+    tail = f"，其中 {skipped} 处源笔记无标题（仅比对补题两版间差异，不与空对标比贴合度）" if skipped else ""
     print(f"\n共 {len(rows)} 行：❌ 硬伤 {bad} 处（必须修复），⚠️ 提示 {warn} 处（建议人工过目）{tail}")
     sys.exit(1 if bad else 0)
 
