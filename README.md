@@ -38,8 +38,10 @@ output/<产品>_<日期>_批NN.csv + 批次日志 + 简短汇报
 | `scripts/count_chars.py` | 标题字数统计（每字符计1），超标退出码非零 |
 | `scripts/check_versions.py` | 两版本差异度 + 与对标贴合度检查 |
 | `scripts/validate_csv.py` | `build`：JSON→六列CSV（UTF-8-BOM，转义无忧）；`check`：六列规范校验 |
+| `scripts/upload_feishu.py` | 六列CSV 一键回填飞书多维表格（读列/匹配/写六列，依赖本地 `lark-cli`） |
 | `assets/` | 产品卡模板、六列表头模板 |
 | `state/current.md` | 当前产品指针 |
+| `state/feishu.md` | 飞书上传目标（url/base_token/table_id） |
 | `products/` | 产品库：`_index.md` 总索引 + 一产品一卡 |
 | `output/` | 六列CSV 产出、`batches.md` 批次日志、`_tmp/` 中间产物 |
 
@@ -62,3 +64,15 @@ output/<产品>_<日期>_批NN.csv + 批次日志 + 简短汇报
 <直接粘贴一条或多条对标笔记>
 我改好了，检查这批（附 CSV）
 ```
+
+## 上传飞书多维表格（可选）
+
+仿写 CSV 通过校验后，可回填到飞书多维表格（Base）：
+
+```
+上传飞书：<CSV 路径>                     # 用 state/feishu.md 已记录的目标
+上传飞书：<CSV 路径>，地址是 <表格URL>   # 首次/换表，自动解析并更新状态
+```
+
+目标表格需含 8 列：`标题 / 正文 / 对标标题 / 标题1 / 标题2 / 对标正文 / 正文1 / 正文2`。
+匹配规则（去空格相等）：优先「对标标题」↔「标题」，撞车/未命中再用「对标正文」↔「正文」；仍无法唯一命中则跳过并报告。写入的六列为 `对标标题/标题1/标题2/对标正文/正文1/正文2`，不改「标题/正文」预填列。

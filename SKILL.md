@@ -26,6 +26,7 @@ description: 小红书笔记高还原仿写流水线。管理产品库（建档/
 | 仿写主流水线 | `references/note-pipeline.md` | 笔记输入 → 双版本仿写 → 脚本校验 → 六列CSV |
 | 批次日志 | `output/batches.md` | 每批产出的溯源（批次/产品/条数/文件/状态） |
 | 硬校验脚本 | `scripts/` | 20字上限、版本差异度、六列CSV规范，机器说了算 |
+| 飞书上传 | `scripts/upload_feishu.py` + `state/feishu.md` | 仿写 CSV 一键回填飞书多维表格 |
 
 ## 启动协议（每次任务必做）
 
@@ -45,7 +46,8 @@ description: 小红书笔记高还原仿写流水线。管理产品库（建档/
 | 3 | 查询/汇报产品库 | "我有哪些产品" / "X的固定tag？" | 先索引后单卡，表格化汇报 | `products/_index.md`、相关卡片 |
 | 4 | 笔记仿写 | 直接粘贴 1 条或多条笔记 | 走主流水线 | `references/note-pipeline.md` |
 | 5 | 终检交付 | "我改好了，检查这批" + CSV | 走终检流程 | `references/phase2-check.md` |
-| 6 | 意图不明 | 输入既像笔记又像新产品信息 | **反问确认，禁止猜测** | — |
+| 6 | 上传飞书 | "上传飞书"/"上传到表格" + CSV（或设置目标 URL） | 走 `scripts/upload_feishu.py` | `state/feishu.md`、本文件"飞书上传"节 |
+| 7 | 意图不明 | 输入既像笔记又像新产品信息 | **反问确认，禁止猜测** | — |
 
 ## 全局纪律
 
@@ -57,6 +59,16 @@ description: 小红书笔记高还原仿写流水线。管理产品库（建档/
 6. 汇报从简：不输出分析过程，只报批次结果（条数/文件/校验结论/需人工注意项）。
 7. 文件名与日志中的日期一律使用真实当前日期（YYYYMMDD）。
 
+## 飞书上传（可选步骤）
+
+仿写 CSV 通过后，可按需回填到飞书多维表格。由 `scripts/upload_feishu.py` 统一执行，**禁止手写飞书写入命令**。
+
+- 上传目标记录在 `state/feishu.md`（url / base_token / table_id）。首次或换表：`python3 scripts/upload_feishu.py <csv> --url <飞书表格URL>` 会自动解析并更新状态文件。
+- 目标表格需含 8 列：`标题` / `正文` / `对标标题` / `标题1` / `标题2` / `对标正文` / `正文1` / `正文2`。
+- 匹配规则（去空格后相等）：优先「对标标题」↔飞书「标题」；撞车或未命中再用「对标正文」↔飞书「正文」；仍无法唯一命中 → **跳过并在结尾报告**，不新建行、不改「标题/正文」预填列。
+- 写入的六列为：`对标标题 / 标题1 / 标题2 / 对标正文 / 正文1 / 正文2`。
+- 支持 `--dry-run` 预览。详见 `python3 scripts/upload_feishu.py --help`。
+
 ## 目录约定
 
 ```
@@ -66,6 +78,7 @@ xhs-rewriter/
 ├── scripts/               # 校验/构建脚本
 ├── assets/                # 模板（产品卡、六列表头）
 ├── state/current.md       # 当前产品指针
+├── state/feishu.md        # 飞书上传目标（url/base_token/table_id）
 ├── products/              # 产品库（一产品一卡 + _index.md 总索引）
 └── output/                # 产出区（CSV、批次日志、_tmp 中间产物）
 ```

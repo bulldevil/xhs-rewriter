@@ -92,6 +92,23 @@ python3 "$SKILL/scripts/validate_csv.py" check "<输出csv路径>" --expect-rows
 注意：第 2 行两版正文接近度偏高，建议人工过目
 ```
 
+## 步骤 7：上传飞书（可选）
+
+仿写 CSV 交付后，如需回填飞书多维表格，用统一脚本，**禁止手写飞书命令**：
+
+```bash
+python3 "$SKILL/scripts/upload_feishu.py" "<输出csv路径>"            # 用 state/feishu.md 里已记录的目标
+python3 "$SKILL/scripts/upload_feishu.py" "<输出csv路径>" --url "<飞书表格URL>"   # 首次/换表：解析并更新状态
+python3 "$SKILL/scripts/upload_feishu.py" "<输出csv路径>" --dry-run  # 只预览匹配，不写
+```
+
+行为要点：
+
+- 检查目标表格 8 列（`标题/正文/对标标题/标题1/标题2/对标正文/正文1/正文2`），缺列即报错停止。
+- 匹配（去空格相等）：「对标标题」↔「标题」优先；撞车/未命中再「对标正文」↔「正文」；仍无法唯一命中 → 跳过。
+- 写入六列：`对标标题/标题1/标题2/对标正文/正文1/正文2`；「标题/正文」预填列不改。
+- 跳过的行在结尾统一报告，退出码 2 提示有人工待核对项。
+
 ## 异常处理速查
 
 | 情况 | 处理 |
