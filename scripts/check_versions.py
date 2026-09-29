@@ -50,8 +50,14 @@ def main():
 
     bad = 0
     warn = 0
+    skipped = 0
     for i, row in enumerate(rows, 1):
         for name, ref_col, c1, c2 in PAIRS:
+            # 源笔记本身没有标题时，标题列整体留空，无版本可比对，跳过而非判偏离。
+            if name == "标题" and not (row.get(ref_col) or "").strip():
+                print(f"行{i:>2} {name}: 源笔记无标题，标题列留空，跳过比对")
+                skipped += 1
+                continue
             inter = sim(row.get(c1), row.get(c2))
             keep = max(sim(row.get(c1), row.get(ref_col)), sim(row.get(c2), row.get(ref_col)))
             if inter >= 0.999:
@@ -67,7 +73,8 @@ def main():
                 verdict = "✅"
             print(f"行{i:>2} {name}: 版本间={inter:.2f} 与对标最高={keep:.2f}  {verdict}")
 
-    print(f"\n共 {len(rows)} 行：❌ 硬伤 {bad} 处（必须修复），⚠️ 提示 {warn} 处（建议人工过目）")
+    tail = f"，跳过标题比对 {skipped} 处（源笔记无标题）" if skipped else ""
+    print(f"\n共 {len(rows)} 行：❌ 硬伤 {bad} 处（必须修复），⚠️ 提示 {warn} 处（建议人工过目）{tail}")
     sys.exit(1 if bad else 0)
 
 

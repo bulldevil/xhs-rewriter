@@ -61,6 +61,8 @@ def cmd_check(args):
     with p.open("r", encoding="utf-8-sig", newline="") as f:
         all_rows = list(csv.reader(f))
 
+    no_title_rows = []
+
     if not all_rows:
         problems.append("文件为空")
         n_data = 0
@@ -73,9 +75,20 @@ def cmd_check(args):
             if len(r) != 6:
                 problems.append(f"第{i}行：列数={len(r)}，应为6")
                 continue
+            # 源笔记本身没有标题时：对标标题/标题1/标题2 三列整体留空属正常，
+            # 但必须三者一致（不能只留空一部分），正文三列仍不得为空。
+            bare_title = not r[0].strip()
+            if bare_title:
+                no_title_rows.append(i)
+                if r[1].strip() or r[2].strip():
+                    problems.append(
+                        f"第{i}行：「对标标题」为空（源笔记无标题），但标题1/标题2有内容，应一并留空")
             for c, v in zip(COLUMNS, r):
-                if not v.strip():
-                    problems.append(f"第{i}行：「{c}」为空")
+                if v.strip():
+                    continue
+                if bare_title and c in ("对标标题", "标题1", "标题2"):
+                    continue
+                problems.append(f"第{i}行：「{c}」为空")
 
     if args.expect_rows is not None and n_data != args.expect_rows:
         problems.append(f"数据行数={n_data}，与输入笔记条数（{args.expect_rows}）不一致")
@@ -85,7 +98,8 @@ def cmd_check(args):
         for x in problems:
             print("  -", x)
         sys.exit(1)
-    print(f"✅ 校验通过：{n_data} 行 × 6 列，表头正确，无空单元格")
+    hint = f"，其中 {len(no_title_rows)} 行源笔记无标题（标题列按规则留空）" if no_title_rows else ""
+    print(f"✅ 校验通过：{n_data} 行 × 6 列，表头正确，无意外空单元格{hint}")
 
 
 def main():
