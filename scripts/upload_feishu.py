@@ -232,7 +232,7 @@ def fetch_records(base_token, table_id):
         "base", "+record-list", "--base-token", base_token,
         "--table-id", table_id,
         "--field-id", "标题", "--field-id", "正文",
-        "--format", "ndjson", "--output", str(tmp), "--as", "user",
+        "--format", "ndjson", "--output", str(tmp), "--overwrite", "--as", "user",
     ])
     if rc != 0:
         print(f"❌ 读取记录失败：\n{err or out}")
