@@ -46,7 +46,7 @@ description: 小红书笔记高还原仿写流水线。管理产品库（建档/
 | 3 | 查询/汇报产品库 | "我有哪些产品" / "X的固定tag？" | 先索引后单卡，表格化汇报 | `products/_index.md`、相关卡片 |
 | 4 | 笔记仿写 | 直接粘贴 1 条或多条笔记 | 走主流水线 | `references/note-pipeline.md` |
 | 5 | 终检交付 | "我改好了，检查这批" + CSV | 走终检流程 | `references/phase2-check.md` |
-| 6 | 上传飞书 | "上传飞书"/"上传到表格" + CSV（或设置目标 URL） | 走 `scripts/upload_feishu.py` | `state/feishu.md`、本文件"飞书上传"节 |
+| 6 | 上传飞书 | "上传飞书"/"上传到表格" + CSV（或设置目标 URL） | 走 `scripts/upload_feishu.py` | `scripts/upload_feishu.py`、`state/feishu.md`、本文件"飞书上传"节 |
 | 7 | 意图不明 | 输入既像笔记又像新产品信息 | **反问确认，禁止猜测** | — |
 
 ## 全局纪律
@@ -58,6 +58,8 @@ description: 小红书笔记高还原仿写流水线。管理产品库（建档/
 5. 每条笔记的两个版本必须有明显差异，禁止机械替换一两个字充数。
 6. 汇报从简：不输出分析过程，只报批次结果（条数/文件/校验结论/需人工注意项）。
 7. 文件名与日志中的日期一律使用真实当前日期（YYYYMMDD）。
+8. **飞书一律走官方脚本**：拉表、匹配、上传飞书，只允许调用 `scripts/upload_feishu.py`（含其 `--record-id` 精确写入能力）。**禁止手写任何飞书写入脚本**、禁止绕过脚本直接调 `lark-cli` 写表。
+9. **禁止复用历史快照**：飞书记录由脚本每次实时拉取（`--overwrite` 覆盖 `_tmp/_feishu_records.ndjson`）。禁止读 `_tmp` 下历史 ndjson 快照、禁止硬编码 record_id（表格被人工改动后 record_id/标题都会失效）。
 
 ## 飞书上传（可选步骤）
 
@@ -66,6 +68,7 @@ description: 小红书笔记高还原仿写流水线。管理产品库（建档/
 - 上传目标记录在 `state/feishu.md`（url / base_token / table_id）。首次或换表：`python3 scripts/upload_feishu.py <csv> --url <飞书表格URL>` 会自动解析并更新状态文件。
 - 目标表格需含 8 列：`标题` / `正文` / `对标标题` / `标题1` / `标题2` / `对标正文` / `正文1` / `正文2`。
 - 匹配规则（去空格后相等）：优先「对标标题」↔飞书「标题」；撞车或未命中再用「对标正文」↔飞书「正文」；仍无法唯一命中 → **跳过并在结尾报告**，不新建行、不改「标题/正文」预填列。
+- 撞车（如标题重复导致无法唯一命中）时，可加 `--record-id <record_id>` 精确写入指定行；record_id 必须来自脚本**本次实时拉取**的 `_feishu_records.ndjson`（或 `--dry-run` 打印），禁止凭记忆/旧快照硬编码。
 - 写入的六列为：`对标标题 / 标题1 / 标题2 / 对标正文 / 正文1 / 正文2`。
 - 支持 `--dry-run` 预览。详见 `python3 scripts/upload_feishu.py --help`。
 
