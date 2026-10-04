@@ -15,8 +15,13 @@
      对标标题 / 标题1 / 标题2 / 对标正文 / 正文1 / 正文2。
      （「标题」「正文」是表格里预填的锚点列，本脚本不改动。）
 
+撞车兜底：标题/正文去空格后仍无法唯一命中时，可用 --record-id 精确写入。
+record_id 必须来自脚本本次实时拉取的 _tmp/_feishu_records.ndjson（或 --dry-run 打印），
+禁止复用旧快照或凭记忆硬编码（表格被人工改动后 record_id 会失效）。
+
 用法：
   python3 scripts/upload_feishu.py <csv路径> [--url <飞书表格URL>] [--dry-run]
+  python3 scripts/upload_feishu.py <csv路径> --record-id <rid1> --record-id <rid2> [--dry-run]
 
 退出码：
   0 全部成功（含跳过但无错误）
@@ -313,6 +318,11 @@ def main():
     ap = argparse.ArgumentParser(description="上传六列仿写 CSV 到飞书多维表格")
     ap.add_argument("csv_path")
     ap.add_argument("--url", help="飞书多维表格 URL；提供则更新状态文件")
+    ap.add_argument(
+        "--record-id", action="append", default=None, metavar="RID",
+        help="按 record_id 精确写入（可重复，与 CSV 行一一对应）。"
+             "用于标题撞车无法唯一匹配时。RID 必须来自本次实时拉取结果，禁止硬编码旧值。",
+    )
     ap.add_argument("--dry-run", action="store_true", help="只预览匹配结果，不真正写飞书")
     args = ap.parse_args()
 
@@ -337,13 +347,26 @@ def main():
     # 4) 匹配
     to_update = {}   # record_id -> 六列字段
     skipped = []     # (csv行号, 原因)
-    for i, row in enumerate(csv_rows, 1):
-        rid = match_record(records, row)
-        if rid is None:
-            anchor = strip_ws(row.get("对标标题", "")) or strip_ws(row.get("对标正文", ""))
-            skipped.append((i, f"未在飞书表格中唯一定位（锚点：{anchor[:20]!r}）"))
-            continue
-        to_update[rid] = {c: row.get(c, "") for c in WRITE_COLUMNS}
+    if args.record_id:
+        # --record-id 精确写入模式：RID 与 CSV 行一一对应
+        if len(args.record_id) != len(csv_rows):
+            print(f"❌ --record-id 数量({len(args.record_id)})与 CSV 行数({len(csv_rows)})不一致")
+            sys.exit(1)
+        # 校验 RID 确实存在于本次实时拉取的记录中，防止过期/失效的 RID 写脏表
+        valid_rids = set(records.keys())
+        for i, (rid, row) in enumerate(zip(args.record_id, csv_rows), 1):
+            if rid not in valid_rids:
+                skipped.append((i, f"--record-id {rid!r} 不在本次拉取的全表中（可能已删行/换行）"))
+                continue
+            to_update[rid] = {c: row.get(c, "") for c in WRITE_COLUMNS}
+    else:
+        for i, row in enumerate(csv_rows, 1):
+            rid = match_record(records, row)
+            if rid is None:
+                anchor = strip_ws(row.get("对标标题", "")) or strip_ws(row.get("对标正文", ""))
+                skipped.append((i, f"未在飞书表格中唯一定位（锚点：{anchor[:20]!r}）"))
+                continue
+            to_update[rid] = {c: row.get(c, "") for c in WRITE_COLUMNS}
 
     print(f"\n🔍 匹配结果：可写入 {len(to_update)} 行，跳过 {len(skipped)} 行")
     for i, reason in skipped:
