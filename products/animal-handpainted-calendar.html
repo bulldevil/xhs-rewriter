@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>产品卡 · 动物手绘台历</title>
+<style>
+  :root{
+    --pink:#f2b880; --pink-deep:#e0915a; --pink-light:#fdf2e7;
+    --green:#a9c8b8; --ink:#524842; --muted:#a29488; --line:#f0e2d3;
+    --head-from:#fbe9d6; --head-to:#eaf1e7;
+    --price-from:#fcf0e1; --price-to:#fcf5ec;
+    --foot:#524842; --foot-ink:#f3ebe2; --foot-accent:#f2c894;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:"PingFang SC","Microsoft YaHei",-apple-system,sans-serif;background:#fdf8f9;color:var(--ink);line-height:1.7;}
+  .wrap{max-width:760px;margin:0 auto;padding:32px 20px 60px;}
+  .card{background:#fff;border-radius:20px;box-shadow:0 8px 30px rgba(120,90,100,.12);overflow:hidden;}
+  .head{background:linear-gradient(135deg,var(--head-from) 0%,var(--head-to) 100%);padding:28px 28px 22px;text-align:center;}
+  .tagline{display:inline-block;background:#fff;color:var(--pink-deep);font-size:12px;padding:4px 12px;border-radius:20px;letter-spacing:1px;margin-bottom:10px;}
+  .head h1{font-size:26px;letter-spacing:2px;color:var(--ink);}
+  .head .sub{color:var(--muted);font-size:13px;margin-top:6px;}
+  .status{margin-top:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+  .pill{font-size:11px;padding:3px 10px;border-radius:14px;background:#fff;border:1px solid var(--line);color:var(--muted);}
+  .pill.hot{background:var(--pink-light);border-color:var(--pink);color:var(--pink-deep);font-weight:600;}
+  .body{padding:26px 28px;}
+  .sec{margin-bottom:26px;}
+  .sec h2{font-size:15px;color:var(--pink-deep);letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+  .sec h2::before{content:"";width:4px;height:16px;background:linear-gradient(var(--pink),var(--green));border-radius:2px;}
+  .grid{display:flex;flex-wrap:wrap;gap:8px;}
+  .tag{background:var(--pink-light);color:var(--pink-deep);font-size:12.5px;padding:5px 12px;border-radius:16px;}
+  .tag.g{background:#eef7f2;color:#4f9a7d;}
+  ul.clean{list-style:none;}
+  ul.clean li{font-size:13.5px;padding:5px 0 5px 20px;position:relative;color:var(--ink);}
+  ul.clean li::before{content:"·";position:absolute;left:4px;color:var(--pink-deep);font-weight:bold;}
+  .kv{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:#fffdfd;}
+  .kv .row{display:flex;font-size:13.5px;padding:3px 0;}
+  .kv .k{width:88px;color:var(--muted);flex-shrink:0;}
+  .kv .v{color:var(--ink);}
+  .price{background:linear-gradient(135deg,var(--price-from),var(--price-to));border-radius:14px;padding:14px 16px;text-align:center;}
+  .price .num{font-size:30px;font-weight:800;color:var(--pink-deep);}
+  .price .num small{font-size:14px;}
+  .foot{background:var(--foot);color:var(--foot-ink);padding:18px 24px;font-size:12.5px;text-align:center;line-height:1.9;}
+  .foot .tags{color:var(--foot-accent);margin-bottom:4px;}
+  .foot .link{color:#fff;font-weight:700;letter-spacing:1px;}
+  .note{font-size:12px;color:var(--muted);text-align:center;margin-top:14px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="head">
+      <span class="tagline">新品 · 日历</span>
+      <h1>动物手绘台历</h1>
+      <div class="sub">一本「治愈系桌面小物 + 日历」的双重属性好物</div>
+      <div class="status">
+        <span class="pill hot">状态：新建</span>
+        <span class="pill">10r+</span>
+        <span class="pill">日历/桌面装饰/家居软装</span>
+        <span class="pill">待写入飞书</span>
+      </div>
+    </div>
+
+    <div class="body">
+      <div class="sec"><h2>产品核心价值</h2><div class="grid"><span class="tag">动物手绘插画</span><span class="tag">尼泊尔风温柔治愈画风</span><span class="tag">每月不同动物主题</span><span class="tag">一页一幅动物插画</span><span class="tag g">16个月使用周期(2026年9月-2027年12月)</span><span class="tag g">台历挂历两用可摆可挂</span><span class="tag g">日历+桌面装饰双重功能</span><span class="tag g">10r+低门槛入手</span></div></div>
+      <div class="sec"><h2>人群关键词</h2><div class="grid"><span class="tag">治愈系小物爱好者</span><span class="tag">桌面布置控</span><span class="tag">家居软装爱好者</span><span class="tag">小众文艺风</span><span class="tag">学生党</span><span class="tag">上班族</span><span class="tag">动物插画爱好者</span></div><div class="grid" style="margin-top:8px;"><span class="tag g">动物手绘</span><span class="tag g">尼泊尔风</span><span class="tag g">温柔治愈</span><span class="tag g">小众文艺</span><span class="tag g">柔和配色</span><span class="tag g">桌面氛围感</span><span class="tag g">清新</span><span class="tag g">松弛感</span></div></div>
+      <div class="sec"><h2>场景关键词</h2><div class="grid"><span class="tag">秋季</span><span class="tag">四季通用</span><span class="tag">跨年</span><span class="tag">新年</span><span class="tag">换季装扮</span><span class="tag">办公桌</span><span class="tag">书桌</span><span class="tag">学习桌</span><span class="tag">卧室</span><span class="tag">化妆桌</span><span class="tag">书房</span><span class="tag">客厅墙面</span><span class="tag">日常办公</span><span class="tag">学习规划</span><span class="tag">家居装饰</span></div><div class="grid" style="margin-top:8px;"><span class="tag g">可摆桌面</span><span class="tag g">可悬挂墙面</span><span class="tag g">台历挂历两用</span><span class="tag g">尼泊尔风</span><span class="tag g">小众文艺</span><span class="tag g">温柔治愈</span><span class="tag g">清新</span><span class="tag g">氛围感</span><span class="tag g">松弛感</span></div></div>
+      <div class="sec"><h2>情绪价值关键词</h2><ul class="clean"><li>给秋天增加一点温柔 · 每天抬头都有小动物陪伴 · 普通桌面变得有氛围</li><li>每个月都有新的小惊喜 · 翻到下一页会期待下一幅画 · 给平淡生活增加一点小美好</li><li>上班的时候抬头看一眼，写作业的时候随手翻一下，原本很普通的桌面突然多了一点温柔感</li></ul></div>
+      <div class="sec"><h2>价格价值</h2><div class="price"><div class="num">10r+</div><div style="color:var(--muted);font-size:12.5px;margin-top:4px;">10r+，一杯奶茶钱就能给桌面增加一点小小的仪式感 · 低门槛入手，一杯奶茶钱 · 平价、低门槛</div></div></div>
+      <div class="sec"><h2>系列定位</h2><div class="kv"><div class="row"><span class="k">组合</span><span class="v">动物手绘插画 × 尼泊尔风温柔治愈画风 × 每月不同动物主题 × 一页一幅动物插画 × 16个月使用周期(2026年9月-2027年12月) × 台历挂历两用可摆可挂 × 日历+桌面装饰双重功能 × 10r+低门槛入手</span></div><div class="row"><span class="k">关键词</span><span class="v">动物手绘台历｜2027台历｜手绘插画台历｜尼泊尔风台历｜治愈系台历｜台历挂历两用｜桌面氛围感｜小众文艺｜16个月台历｜10r+平价台历</span></div></div></div>
+    </div>
+
+    <div class="foot">
+      <div class="tags">#2027台历 #动物手绘台历 #手绘插画台历 #治愈系台历 #台历挂历两用 #桌面氛围感好物 #书桌装饰 #办公桌布置 #家居氛围感好物 #平价台历</div>
+      <div class="link">— 👇👇👇 点击链接 👇👇👇 —</div>
+    </div>
+  </div>
+  <div class="note">由 xhs-rewriter 产品库自动生成 · 产品卡 animal-handpainted-calendar · 主题 warm</div>
+</div>
+</body>
+</html>
