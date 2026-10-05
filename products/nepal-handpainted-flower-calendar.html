@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>产品卡 · 尼泊尔手绘鲜花挂历</title>
+<style>
+  :root{
+    --pink:#e0a66b; --pink-deep:#c8824a; --pink-light:#fbf1e4;
+    --green:#a9c3a0; --ink:#54473f; --muted:#a39386; --line:#eee0cd;
+    --head-from:#f7e6d0; --head-to:#eef2e4;
+    --price-from:#f8ecd9; --price-to:#fbf4ea;
+    --foot:#54473f; --foot-ink:#f3eae0; --foot-accent:#eecb96;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:"PingFang SC","Microsoft YaHei",-apple-system,sans-serif;background:#fdf8f9;color:var(--ink);line-height:1.7;}
+  .wrap{max-width:760px;margin:0 auto;padding:32px 20px 60px;}
+  .card{background:#fff;border-radius:20px;box-shadow:0 8px 30px rgba(120,90,100,.12);overflow:hidden;}
+  .head{background:linear-gradient(135deg,var(--head-from) 0%,var(--head-to) 100%);padding:28px 28px 22px;text-align:center;}
+  .tagline{display:inline-block;background:#fff;color:var(--pink-deep);font-size:12px;padding:4px 12px;border-radius:20px;letter-spacing:1px;margin-bottom:10px;}
+  .head h1{font-size:26px;letter-spacing:2px;color:var(--ink);}
+  .head .sub{color:var(--muted);font-size:13px;margin-top:6px;}
+  .status{margin-top:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+  .pill{font-size:11px;padding:3px 10px;border-radius:14px;background:#fff;border:1px solid var(--line);color:var(--muted);}
+  .pill.hot{background:var(--pink-light);border-color:var(--pink);color:var(--pink-deep);font-weight:600;}
+  .body{padding:26px 28px;}
+  .sec{margin-bottom:26px;}
+  .sec h2{font-size:15px;color:var(--pink-deep);letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+  .sec h2::before{content:"";width:4px;height:16px;background:linear-gradient(var(--pink),var(--green));border-radius:2px;}
+  .grid{display:flex;flex-wrap:wrap;gap:8px;}
+  .tag{background:var(--pink-light);color:var(--pink-deep);font-size:12.5px;padding:5px 12px;border-radius:16px;}
+  .tag.g{background:#eef7f2;color:#4f9a7d;}
+  ul.clean{list-style:none;}
+  ul.clean li{font-size:13.5px;padding:5px 0 5px 20px;position:relative;color:var(--ink);}
+  ul.clean li::before{content:"·";position:absolute;left:4px;color:var(--pink-deep);font-weight:bold;}
+  .kv{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:#fffdfd;}
+  .kv .row{display:flex;font-size:13.5px;padding:3px 0;}
+  .kv .k{width:88px;color:var(--muted);flex-shrink:0;}
+  .kv .v{color:var(--ink);}
+  .price{background:linear-gradient(135deg,var(--price-from),var(--price-to));border-radius:14px;padding:14px 16px;text-align:center;}
+  .price .num{font-size:30px;font-weight:800;color:var(--pink-deep);}
+  .price .num small{font-size:14px;}
+  .foot{background:var(--foot);color:var(--foot-ink);padding:18px 24px;font-size:12.5px;text-align:center;line-height:1.9;}
+  .foot .tags{color:var(--foot-accent);margin-bottom:4px;}
+  .foot .link{color:#fff;font-weight:700;letter-spacing:1px;}
+  .note{font-size:12px;color:var(--muted);text-align:center;margin-top:14px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="head">
+      <span class="tagline">新品 · 家居软装</span>
+      <h1>尼泊尔手绘鲜花挂历</h1>
+      <div class="sub">一本兼具"挂历功能"与"复古艺术画"的双重属性好物</div>
+      <div class="status">
+        <span class="pill hot">状态：新建</span>
+        <span class="pill">9r / 9.8r包邮</span>
+        <span class="pill">家居软装/装饰画/日历</span>
+        <span class="pill">待写入飞书</span>
+      </div>
+    </div>
+
+    <div class="body">
+      <div class="sec"><h2>产品核心价值</h2><div class="grid"><span class="tag">尼泊尔纯手工绘制</span><span class="tag">复古温柔繁花插画</span><span class="tag">装饰画挂历二合一</span><span class="tag">14cmx70cm极窄小户型适配</span><span class="tag">暖米底纸质感</span><span class="tag">跨年份即挂即用</span><span class="tag g">9r极佳性价比</span><span class="tag">一页双月定期换画</span><span class="tag">独立封装质感</span></div></div>
+      <div class="sec"><h2>人群关键词</h2><div class="grid"><span class="tag">租房党/小户型</span><span class="tag">家居氛围感/软装爱好者</span><span class="tag">复古插画/手绘美学受众</span><span class="tag">送礼/闺蜜礼物需求者</span><span class="tag">学生党/平价好物控</span><span class="tag">生活仪式感追求者</span></div><div class="grid" style="margin-top:8px;"><span class="tag g">氛围感</span><span class="tag g">治愈系</span><span class="tag g">复古浪漫</span><span class="tag g">手工感</span><span class="tag g">温暖治愈</span><span class="tag g">温柔柔和</span><span class="tag g">小众艺术感</span><span class="tag g">烂漫花景</span><span class="tag g">细腻美学</span><span class="tag g">生活美学</span></div></div>
+      <div class="sec"><h2>场景关键词</h2><div class="grid"><span class="tag">四季通用</span><span class="tag">跨年</span><span class="tag">新年</span><span class="tag">新春</span><span class="tag">换季装扮</span><span class="tag">卧室床头</span><span class="tag">沙发背景墙</span><span class="tag">书桌侧边</span><span class="tag">书架边</span><span class="tag">客厅窄墙</span><span class="tag">租房改造</span><span class="tag">居家办公桌旁</span></div><div class="grid" style="margin-top:8px;"><span class="tag g">新居搬迁</span><span class="tag g">闺蜜送礼</span><span class="tag g">节日新年礼物</span><span class="tag g">生活美学打卡</span><span class="tag g">拍照背景墙</span><span class="tag g">复古风</span><span class="tag g">治愈系</span><span class="tag g">韩系简约</span><span class="tag g">奶油风</span><span class="tag g">日式木质风</span><span class="tag g">自然花卉风</span></div></div>
+      <div class="sec"><h2>情绪价值关键词</h2><ul class="clean"><li>一杯奶茶钱提升整间房幸福感 · 挂上房间瞬间变温柔治愈 · 抬眼就能邂逅烂漫花景</li><li>别人家的复古小屋画进挂历里 · 不用买一堆摆件也能搞定墙面软装 · 实体店29对比9r破盘价</li><li>手慢无的抢手好物 · 送刚搬家朋友的精致小礼 · 心烦时看一眼内心变得平和舒缓</li><li>生活仪式感拉满</li></ul></div>
+      <div class="sec"><h2>价格价值</h2><div class="price"><div class="num">9r / 9.8r <small>包邮</small></div><div style="color:var(--muted);font-size:12.5px;margin-top:4px;">9r买到的不是挂历是一整年的墙面装饰画 · 实体店卖29，这里9.8还包邮 · 限时前100本抢购，一杯奶茶钱闭眼冲</div></div></div>
+      <div class="sec"><h2>系列定位</h2><div class="kv"><div class="row"><span class="k">组合</span><span class="v">尼泊尔纯手工绘制 × 复古温柔繁花插画 × 装饰画挂历二合一 × 14cmx70cm极窄小户型适配 × 暖米底纸质感 × 跨年份即挂即用 × 9r极佳性价比 × 一页双月定期换画 × 独立封装质感</span></div><div class="row"><span class="k">关键词</span><span class="v">尼泊尔挂历｜2027日历｜手绘鲜花挂历｜氛围感装饰画｜极窄小户型｜9r挂历｜治愈系家居｜租房软装｜平价礼物｜复古插画</span></div></div></div>
+    </div>
+
+    <div class="foot">
+      <div class="tags">#尼泊尔挂历 #手绘日历 #2027日历 #装饰画 #氛围感家居 #治愈系 #家居墙面装饰 #小户型软装 #平价好物 #生活要有仪式感</div>
+      <div class="link">— 👇👇👇 点击链接 👇👇👇 —</div>
+    </div>
+  </div>
+  <div class="note">由 xhs-rewriter 产品库自动生成 · 产品卡 nepal-handpainted-flower-calendar · 主题 cream</div>
+</div>
+</body>
+</html>

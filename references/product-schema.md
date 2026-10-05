@@ -12,6 +12,7 @@ name: 产品全称
 slug: travel-bag
 aliases: [别名1, 别名2]
 category: 品类
+theme:            # 可选覆盖：预设名或 #色值；通常留空，自动按颜色描述配色
 brand: 品牌（无则留空）
 selling_points: [核心卖点1, 核心卖点2, 核心卖点3]
 seo_keywords: [SEO关键词1, SEO关键词2]
@@ -54,6 +55,7 @@ updated: 2026-09-26
 3. **front matter 与正文必须一致**：改了正文卖点详述，同步改 `selling_points`；改了 Tag 块，同步改 `tags`。
 4. 每次修改卡片必须更新 `updated` 日期。
 5. **slug 规则**：小写英文/拼音短词（如 `travel-bag`），冲突时追加 `-2`、`-3`。文件名用 slug，中文名只出现在卡内。
+6. **`theme` 可选（手动覆盖）**：正常情况下不写——生成 HTML 时按卡片里对颜色的描述自动配色；仅在需强制某配色时才写（预设名如 `brown`，或直接写色值 `#8e44ad`）。详见 `references/product-card-html.md`。
 
 ### 总索引 `products/_index.md`
 

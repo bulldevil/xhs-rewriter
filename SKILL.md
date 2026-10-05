@@ -26,6 +26,7 @@ description: 小红书笔记高还原仿写流水线。管理产品库（建档/
 | 仿写主流水线 | `references/note-pipeline.md` | 笔记输入 → 双版本仿写 → 脚本校验 → 六列CSV |
 | 批次日志 | `output/batches.md` | 每批产出的溯源（批次/产品/条数/文件/状态） |
 | 硬校验脚本 | `scripts/` | 20字上限、版本差异度、六列CSV规范，机器说了算 |
+| 产品卡 HTML | `scripts/build_product_html.py` + `references/product-card-html.md` | 产品卡 MD → 产品卡 HTML（与 md 同目录并排，按卡片颜色描述自动配色） |
 | 飞书上传 | `scripts/upload_feishu.py` + `state/feishu.md` | 仿写 CSV 一键回填飞书多维表格 |
 
 ## 启动协议（每次任务必做）
@@ -47,7 +48,8 @@ description: 小红书笔记高还原仿写流水线。管理产品库（建档/
 | 4 | 笔记仿写 | 直接粘贴 1 条或多条笔记 | 走主流水线 | `references/note-pipeline.md` |
 | 5 | 终检交付 | "我改好了，检查这批" + CSV | 走终检流程 | `references/phase2-check.md` |
 | 6 | 上传飞书 | "上传飞书"/"上传到表格" + CSV（或设置目标 URL） | 走 `scripts/upload_feishu.py` | `scripts/upload_feishu.py`、`state/feishu.md`、本文件"飞书上传"节 |
-| 7 | 意图不明 | 输入既像笔记又像新产品信息 | **反问确认，禁止猜测** | — |
+| 7 | 产品卡生成HTML | "把产品卡做成HTML/网页/预览图" | 跑 `scripts/build_product_html.py --all`（或 `<slug>`） | `references/product-card-html.md` |
+| 8 | 意图不明 | 输入既像笔记又像新产品信息 | **反问确认，禁止猜测** | — |
 
 ## 全局纪律
 
@@ -60,6 +62,7 @@ description: 小红书笔记高还原仿写流水线。管理产品库（建档/
 7. 文件名与日志中的日期一律使用真实当前日期（YYYYMMDD）。
 8. **飞书一律走官方脚本**：拉表、匹配、上传飞书，只允许调用 `scripts/upload_feishu.py`（含其 `--record-id` 精确写入能力）。**禁止手写任何飞书写入脚本**、禁止绕过脚本直接调 `lark-cli` 写表。
 9. **禁止复用历史快照**：飞书记录由脚本每次实时拉取（`--overwrite` 覆盖 `_tmp/_feishu_records.ndjson`）。禁止读 `_tmp` 下历史 ndjson 快照、禁止硬编码 record_id（表格被人工改动后 record_id/标题都会失效）。
+10. **HTML 一律由脚本生成**：产品卡 HTML 只允许跑 `scripts/build_product_html.py`，禁止手写整页 HTML；事实只来自产品卡。
 
 ## 飞书上传（可选步骤）
 
@@ -82,6 +85,6 @@ xhs-rewriter/
 ├── assets/                # 模板（产品卡、六列表头）
 ├── state/current.md       # 当前产品指针
 ├── state/feishu.md        # 飞书上传目标（url/base_token/table_id）
-├── products/              # 产品库（一产品一卡 + _index.md 总索引）
+├── products/              # 产品库（一产品一卡 md + 同名 html 产品卡 + _index.md + index.html）
 └── output/                # 产出区（CSV、批次日志、_tmp 中间产物）
 ```
