@@ -1,6 +1,6 @@
 ---
 name: xhs-rewriter
-description: 小红书笔记高还原仿写流水线。管理产品库（建档/切换/查询/汇报），围绕"当前产品"把一条或多条对标笔记仿写成 标题×2 + 正文×2，产出六列CSV（对标标题/标题1/标题2/对标正文/正文1/正文2）供下游工具读取，支持人工改稿后的终检交付。
+description: 小红书笔记高还原仿写流水线。管理产品库（建档/切换/查询/汇报），围绕"当前产品"把一条或多条对标笔记仿写成 标题×2 + 正文×2，产出六列CSV（对标标题/标题1/标题2/对标正文/正文1/正文2）供下游工具读取，支持人工改稿后的终检交付。当用户粘贴小红书笔记/文案要求仿写、改写、洗稿、出两版，或提到"新产品建档""切换产品""终检""上传飞书"，或工作区内出现 xhs-rewriter 目录时，使用本 skill。
 ---
 
 # 小红书笔记贴身仿写流水线（xhs-rewriter）
@@ -28,6 +28,15 @@ description: 小红书笔记高还原仿写流水线。管理产品库（建档/
 | 硬校验脚本 | `scripts/` | 20字上限、版本差异度、六列CSV规范，机器说了算 |
 | 产品卡 HTML | `scripts/build_product_html.py` + `references/product-card-html.md` | 产品卡 MD → 产品卡 HTML（与 md 同目录并排，按卡片颜色描述自动配色） |
 | 飞书上传 | `scripts/upload_feishu.py` + `state/feishu.md` | 仿写 CSV 一键回填飞书多维表格 |
+
+## 加载纪律（先遵守，再动手）
+
+本 skill 已激活时，本文件即唯一总控，**不要再去摸索目录结构**。
+
+1. **禁止重复摸底**：不要通读 `README.md`、不要 `ls -R` 整个仓库、不要把 `output/` 历史产出翻一遍。需要什么按下面的路由精确打开。
+2. **references 严格按需加载**：`references/` 下 9 个文件只在路由表指明"必读"时才读，**禁止一次全读**。仿写只读 `note-pipeline.md`（它会自行引用 title/body/shared 三个子规则）；建档只读 `product-schema.md` + `assets/product-card-template.md`。
+3. **数据文件只按需精确读**：产品事实读当前产品那一张卡即可，不要遍历 `products/` 全部卡片；批次溯源只读 `output/batches.md` 对应行，不要读历史 CSV。
+4. **脚本优先，禁止临造**：CSV、HTML、飞书写入三类产出各有官方脚本（见核心机制表）。**任何"临时写个小脚本处理一下"的想法都是违规的**，包括放在 `output/_tmp/` 下的一次性脚本。脚本能力不足时，改数据源 + 重跑脚本，或停下来问用户。
 
 ## 启动协议（每次任务必做）
 
@@ -65,6 +74,7 @@ description: 小红书笔记高还原仿写流水线。管理产品库（建档/
 9. **禁止复用历史快照**：飞书记录由脚本每次实时拉取（`--overwrite` 覆盖 `_tmp/_feishu_records.ndjson`）。禁止读 `_tmp` 下历史 ndjson 快照、禁止硬编码 record_id（表格被人工改动后 record_id/标题都会失效）。
 10. **HTML 一律由脚本生成**：产品卡 HTML 与索引页 `products/index.html` 都只允许跑 `scripts/build_product_html.py` 生成，禁止手写整页 HTML；事实只来自产品卡。
 11. **建档/改卡必同步索引**：任何「建卡 / 删卡 / 改 slug / 改一句话定位 / 改价格 / 改主题色」之后，必须跑 `scripts/build_product_html.py --index`（或 `--all`）重生成 `products/index.html`，否则索引页会漏卡或残留旧信息。改 `_index.md` 是必要的，但不等于 `index.html` 已更新。
+12. **修订已产出内容只走数据源重建**：产品卡事实变更后需批量修订已产出批次（如"六款→九款"这类表述），**禁止另写替换脚本去生成 CSV**（哪怕是临时的、哪怕不直接写飞书），也禁止把这类临时脚本当作"可复用资产"留存。正确做法：改 `output/_tmp/<批次>.json` 这个既有数据源（锚点列不动，仅改正文/标题字段）→ `scripts/validate_csv.py build` 重建 CSV → 重跑三项硬校验 → 再用 `scripts/upload_feishu.py`（必要时 `--record-id`）上传。临时探测用的 ndjson/CSV/脚本用完即删，不进入正式资产。
 
 ## 飞书上传（可选步骤）
 
