@@ -3,7 +3,8 @@ name:
 slug:
 aliases: []
 category:
-theme:            # 可选覆盖（预设名或 #色值），通常留空，自动按颜色描述配色
+# 可选覆盖（预设名或 #色值），通常留空，自动按颜色描述配色
+theme:
 brand:
 selling_points: []
 seo_keywords: []

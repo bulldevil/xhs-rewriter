@@ -3,7 +3,7 @@
 把 `products/<slug>.md` 渲染成一张「产品卡 HTML」，版式与配色以
 《产品卡_桃花晕染9款发夹.html》为母版。
 
-- **机器实现**：`scripts/build_product_html.py`（`--all` 全量 / `<slug>` 单张 / `--list` 列出 / `--index` 加索引页）
+- **机器实现**：`scripts/build_product_html.py`（`--all` 全量 / `<slug>` 单张 / `--list` 列出 / `--index` 只同步索引页）
 - **本文件**：人读的字段映射 + 主题规则，两者必须保持一致。
 - **产物位置**：html 与 md 放在一起（`products/` 目录），每张卡 `<slug>.md` 旁就是 `<slug>.html`。
 
@@ -12,8 +12,9 @@
 用户要「产品卡 HTML / 产品卡网页 / 把产品卡做成图 / 产品卡预览」时，直接跑脚本：
 
 ```bash
-python3 scripts/build_product_html.py --all      # 全量（含 index.html）
-python3 scripts/build_product_html.py <slug>     # 单张
+python scripts/build_product_html.py --all       # 全量（含 index.html）
+python scripts/build_product_html.py <slug>      # 单张
+python scripts/build_product_html.py --index     # 只同步 index.html
 ```
 
 产出到 `products/<slug>.html`（与 md 同目录并排）+ `products/index.html`（索引页）。
@@ -26,7 +27,7 @@ python3 scripts/build_product_html.py <slug>     # 单张
 | `.tagline` 角标 | `category` | `新品 · {category 第一段}` |
 | `.head h1` 主标题 | `name` | 原文 |
 | `.head .sub` 副行 | `一句话定位` | 取第一个 `，。：；` 前的内容；无则用 `selling_points` 前 4 条 × 连接 |
-| `.status` 状态 pill | `created` / `updated` / `price` / `category` | `状态：新建/更新`（created==updated 为新建）、`price`、`category`、`待写入飞书` |
+| `.status` 状态 pill | `created` / `updated` / `price` / `category` | `状态：新建/更新`（created==updated 为新建）、`price`、`category` |
 | **产品核心价值** | `selling_points` | 每条一个 tag；含价格/容量/功能等词的标绿（`.tag.g`） |
 | **人群关键词**（第一行） | `audience` | 按 `、，` 切分，去掉「喜欢」前缀与「的人/人群」后缀 |
 | **人群关键词**（第二行·绿） | `目标人群 → 审美关键词` | 按 `/、，` 切分 |
@@ -65,13 +66,14 @@ python3 scripts/build_product_html.py <slug>     # 单张
 | `green` | 抹茶 / 薄荷 / 青碧 / 绿色 | 抹茶绿 #8fbfa8 |
 | 氛围兜底 | 温柔/治愈/温暖 → warm；清新/清透/清爽 → cream；复古 → brown | — |
 
-**新增配色方案**：产品卡里出现了新颜色 → 在 `COLOR_WORDS` 加「颜色词 → 主题 key」，
-再在 `THEMES` 加一整套配色（或复用 `derive_theme("#色值")` 自动派生）。加完重跑 `--all`。
+**新增配色方案**：未知颜色不会自动生成主题，默认会回落到 `pink`。需要支持新颜色时，
+在 `COLOR_WORDS` 加「颜色词 → 主题 key」，再在 `THEMES` 加一整套配色（或复用
+`derive_theme("#色值")` 自动派生），然后重跑 `--all`。
 
 ## 四、纪律
 
 1. **HTML 一律由脚本生成**，禁止手写整页 HTML（与 CSV 纪律一致）。
 2. **事实只来自产品卡**：脚本只读 frontmatter + 正文既定区块，卡片没有的不编造。
-3. 新增/修改产品卡后，重新跑 `--all` 刷新 `products/` 下的 html。
+3. 新增/修改产品卡后，重新跑 `<slug> --index` 或 `--all` 刷新对应 HTML 和索引页。
 4. `theme` 是可选的手动覆盖字段：缺省时按卡片颜色描述自动配色；改了颜色描述记得刷新对应卡。
-5. 遇到卡片描述里有新颜色（词表未覆盖）时，按上节「新增配色方案」补词表 + 配色，而不是让它回落默认色。
+5. 遇到卡片描述里有新颜色（词表未覆盖）时，按上节「新增配色方案」补词表 + 配色；如果暂不需要新主题，可接受回落默认色。

@@ -37,7 +37,7 @@
 1. 逐行检查并修正，修正结果写新的 JSON（沿用批次号，后缀 `-final`）：`output/_tmp/<批次号>-final.json`
 2. 构建终版：`output/<slug>_<YYYYMMDD>_批NN_final.csv`
    （列结构不变，仍是六列——下游工具无感切换）
-3. 复跑三项校验（count_chars / check_versions / validate_csv check），不过则修到过
+3. 复跑三项机械校验（count_chars / check_versions / validate_csv check），不过则修到过
 4. `output/batches.md` 追加一条终检记录（原批次备注列联动）
 
 ⚠️ 对标标题/对标正文两列**仍然逐字不动**——人工也不该改，若发现被改，恢复原样并在汇报中说明。

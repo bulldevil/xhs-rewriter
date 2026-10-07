@@ -3,14 +3,15 @@
 
 把一张产品卡 Markdown（products/<slug>.md）渲染成一张「产品卡 HTML」
 （products/<slug>.html，与 md 同目录并排），版式以《产品卡_桃花晕染9款发夹.html》为模板。
-配色按卡片里对颜色的描述自动推断（COLOR_WORDS/TONE_WORDS），新颜色会自动新增配色方案；
+配色按卡片里对颜色的描述自动推断（COLOR_WORDS/TONE_WORDS），未登记的新颜色会回落到默认主题；
 也可用 frontmatter 的 theme 字段手动覆盖（预设名或 #色值）。
 索引页输出为 products/index.html。
 
 用法:
-  python3 scripts/build_product_html.py --all           # 生成 products/ 下全部产品卡
-  python3 scripts/build_product_html.py <slug>          # 只生成某一款（slug）
-  python3 scripts/build_product_html.py --list          # 列出可生成的产品
+  python scripts/build_product_html.py --all             # 生成 products/ 下全部产品卡
+  python scripts/build_product_html.py <slug>            # 只生成某一款（slug）
+  python scripts/build_product_html.py --index           # 只重生成 index.html
+  python scripts/build_product_html.py --list             # 列出可生成的产品
 
 字段映射与主题规则见 references/product-card-html.md（本文档是"机器实现"，
 那份 md 是"人读的方法说明"，两者必须保持一致）。
@@ -105,7 +106,7 @@ GREEN_POINT_HINT = ("价格", "价", "r+", "性价比", "容量", "抓力", "功
 
 
 # ---------------------------------------------------------------------------
-# 自动配色：根据产品卡里对颜色的描述，推断主题（新颜色会自动新增配色方案）。
+# 自动配色：根据产品卡里对颜色的描述，推断主题；未登记颜色回落到默认主题。
 # COLOR_WORDS：具体颜色词 → 主题 key（取在正文里出现位置最靠前的一个）。
 # TONE_WORDS：没有具体颜色时，按氛围/色调兜底。
 # ---------------------------------------------------------------------------
@@ -239,7 +240,7 @@ def resolve_theme(fm: dict, body: dict):
     """
     explicit = (fm.get("theme") or "").strip()
     if explicit:
-        if explicit.startswith("#"):
+        if re.fullmatch(r"#[0-9a-fA-F]{6}", explicit):
             return explicit, derive_theme(explicit)
         if explicit in THEMES:
             return explicit, THEMES[explicit]
@@ -253,7 +254,7 @@ def resolve_theme(fm: dict, body: dict):
 # 解析
 # ---------------------------------------------------------------------------
 def parse_frontmatter(fm_text: str) -> dict:
-    """解析 YAML front matter。只支持本产品库用到的扁平键 + 行内 list。"""
+    """解析本产品库使用的简化 front matter（扁平键 + 行内 list）。"""
     data = {}
     for line in fm_text.splitlines():
         line = line.rstrip()
@@ -269,6 +270,9 @@ def parse_frontmatter(fm_text: str) -> dict:
                 x.strip().strip('"').strip("'") for x in inner.split(",")
             ]
         else:
+            # 模板允许 theme 留空并带说明注释；不要把注释误当成色值。
+            if key == "theme" and val.startswith("#") and not re.fullmatch(r"#[0-9a-fA-F]{6}", val):
+                val = ""
             data[key] = val.strip('"').strip("'")
     return data
 
@@ -315,7 +319,7 @@ def split_slash(s: str) -> list:
 def clean_audience(tag: str) -> str:
     """人群短语清洗：去掉『喜欢』前缀与『的人/人群』后缀。"""
     t = tag.strip()
-    for pre in ("喜欢", "喜欢", "爱"):
+    for pre in ("喜欢", "爱"):
         if t.startswith(pre):
             t = t[len(pre):]
             break
@@ -568,7 +572,6 @@ def build_html(slug: str, fm: dict, body: dict) -> str:
         <span class="pill hot">状态：{esc(status_text)}</span>
         <span class="pill">{esc(price_raw)}</span>
         <span class="pill">{esc(category)}</span>
-        <span class="pill">待写入飞书</span>
       </div>
     </div>
 
@@ -607,7 +610,7 @@ def list_products():
 
 
 def build_index(products):
-    """生成 output/html/index.html，聚合全部产品卡入口。"""
+    """生成 products/index.html，聚合全部产品卡入口。"""
     items = []
     for p in products:
         slug, fm, body = load_product(p)
@@ -656,7 +659,7 @@ def main():
     ap.add_argument("slugs", nargs="*", help="slug（不填则配合 --all）")
     ap.add_argument("--all", action="store_true", help="生成全部产品卡")
     ap.add_argument("--list", action="store_true", help="列出可生成的产品")
-    ap.add_argument("--index", action="store_true", help="同时生成 index.html 索引页")
+    ap.add_argument("--index", action="store_true", help="生成 index.html 索引页；可单独使用")
     args = ap.parse_args()
 
     products = list_products()
@@ -666,6 +669,14 @@ def main():
             theme_key, _ = resolve_theme(fm, body)
             src = "theme字段" if (fm.get("theme") or "").strip() else "颜色描述"
             print(f"  {p.stem:<38} {fm.get('name', '')}  [主题={theme_key}（{src}）]")
+        return
+
+    # --index 可独立使用，便于只同步索引页而不重写单张产品卡。
+    if args.index and not args.all and not args.slugs:
+        OUTDIR.mkdir(parents=True, exist_ok=True)
+        idx = OUTDIR / "index.html"
+        idx.write_text(build_index(products), encoding="utf-8")
+        print(f"✅ {idx.relative_to(ROOT)}  ← 索引页")
         return
 
     targets = products if args.all else None

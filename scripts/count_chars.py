@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""统计六列CSV中标题列的字数（每个字符计1：汉字/Emoji/标点/数字/英文都算）。
+"""统计六列CSV中标题列的 Python 字符数（汉字/Emoji/标点/数字/英文都算一个码点）。
+
+Emoji 组合可能包含多个码点，因此这里的计数不等同于视觉上的字素数；
+标题上限以该脚本的结果为准。
 
 用法:
     python count_chars.py <csv路径> [--limit 20]
