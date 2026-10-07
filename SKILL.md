@@ -63,6 +63,7 @@ description: 小红书笔记高还原仿写流水线。管理产品库（建档/
 7. 文件名与日志中的日期一律使用真实当前日期（YYYYMMDD）。
 8. **飞书一律走官方脚本**：拉表、匹配、上传飞书，只允许调用 `scripts/upload_feishu.py`（含其 `--record-id` 精确写入能力）。**禁止手写任何飞书写入脚本**、禁止绕过脚本直接调 `lark-cli` 写表。
 9. **禁止复用历史快照**：飞书记录由脚本每次实时拉取（`--overwrite` 覆盖 `_tmp/_feishu_records.ndjson`）。禁止读 `_tmp` 下历史 ndjson 快照、禁止硬编码 record_id（表格被人工改动后 record_id/标题都会失效）。
+12. **修订已产出内容只走数据源重建**：产品卡事实变更后需批量修订已产出批次（如"六款→九款"这类表述），**禁止另写替换脚本去生成 CSV**（哪怕是临时的、哪怕不直接写飞书），也禁止把这类临时脚本当作"可复用资产"留存。正确做法：改 `output/_tmp/<批次>.json` 这个既有数据源（锚点列不动，仅改正文/标题字段）→ `scripts/validate_csv.py build` 重建 CSV → 重跑三项硬校验 → 再用 `scripts/upload_feishu.py`（必要时 `--record-id`）上传。临时探测用的 ndjson/CSV/脚本用完即删，不进入正式资产。
 10. **HTML 一律由脚本生成**：产品卡 HTML 与索引页 `products/index.html` 都只允许跑 `scripts/build_product_html.py` 生成，禁止手写整页 HTML；事实只来自产品卡。
 11. **建档/改卡必同步索引**：任何「建卡 / 删卡 / 改 slug / 改一句话定位 / 改价格 / 改主题色」之后，必须跑 `scripts/build_product_html.py --index`（或 `--all`）重生成 `products/index.html`，否则索引页会漏卡或残留旧信息。改 `_index.md` 是必要的，但不等于 `index.html` 已更新。
 
