@@ -20,8 +20,8 @@ record_id 必须来自脚本本次实时拉取的 _tmp/_feishu_records.ndjson（
 禁止复用旧快照或凭记忆硬编码（表格被人工改动后 record_id 会失效）。
 
 用法：
-  python3 scripts/upload_feishu.py <csv路径> [--url <飞书表格URL>] [--dry-run]
-  python3 scripts/upload_feishu.py <csv路径> --record-id <rid1> --record-id <rid2> [--dry-run]
+  python scripts/upload_feishu.py <csv路径> [--url <飞书表格URL>] [--dry-run]
+  python scripts/upload_feishu.py <csv路径> --record-id <rid1> --record-id <rid2> [--dry-run]
 
 退出码：
   0 全部成功（含跳过但无错误）
@@ -137,7 +137,7 @@ def write_state(base_token, table_id, url):
         "# 飞书上传状态",
         "",
         "> 由 scripts/upload_feishu.py 维护。上传目标飞书多维表格的坐标。",
-        "> 更换上传目标：直接运行 `python3 scripts/upload_feishu.py <csv> --url <新URL>` 即可更新。",
+        "> 更换上传目标：直接运行 `python scripts/upload_feishu.py <csv> --url <新URL>` 即可更新。",
         "",
         f"- url: {url}",
         f"- base_token: {base_token}",
@@ -173,15 +173,18 @@ def ensure_target(args):
     url = args.url
     if url:
         base_token, table_id = resolve_url(url)
-        write_state(base_token, table_id or "", url)
-        print(f"✅ 已解析并记录目标表格：base_token={base_token} table_id={table_id or '(URL 未带 table，需补)'}")
+        if args.dry_run:
+            print(f"✅ 已解析目标表格（dry-run 不更新 state/feishu.md）：base_token={base_token} table_id={table_id or '(URL 未带 table，需补)'}")
+        else:
+            write_state(base_token, table_id or "", url)
+            print(f"✅ 已解析并记录目标表格：base_token={base_token} table_id={table_id or '(URL 未带 table，需补)'}")
         return base_token, table_id
     st = read_state()
     base_token = st.get("base_token")
     table_id = st.get("table_id")
     if not base_token:
         print("❌ 未设置飞书上传目标。请先运行：")
-        print("   python3 scripts/upload_feishu.py <csv> --url <飞书表格URL>")
+        print("   python scripts/upload_feishu.py <csv> --url <飞书表格URL>")
         sys.exit(1)
     return base_token, table_id
 
@@ -352,6 +355,9 @@ def main():
         if len(args.record_id) != len(csv_rows):
             print(f"❌ --record-id 数量({len(args.record_id)})与 CSV 行数({len(csv_rows)})不一致")
             sys.exit(1)
+        if len(set(args.record_id)) != len(args.record_id):
+            print("❌ --record-id 中存在重复值，拒绝让后一个 CSV 行覆盖前一个行")
+            sys.exit(1)
         # 校验 RID 确实存在于本次实时拉取的记录中，防止过期/失效的 RID 写脏表
         valid_rids = set(records.keys())
         for i, (rid, row) in enumerate(zip(args.record_id, csv_rows), 1):
@@ -366,6 +372,9 @@ def main():
                 anchor = strip_ws(row.get("对标标题", "")) or strip_ws(row.get("对标正文", ""))
                 skipped.append((i, f"未在飞书表格中唯一定位（锚点：{anchor[:20]!r}）"))
                 continue
+            if rid in to_update:
+                skipped.append((i, f"与 CSV 前一行匹配到同一 record_id {rid!r}，为避免静默覆盖而跳过"))
+                continue
             to_update[rid] = {c: row.get(c, "") for c in WRITE_COLUMNS}
 
     print(f"\n🔍 匹配结果：可写入 {len(to_update)} 行，跳过 {len(skipped)} 行")
@@ -378,7 +387,7 @@ def main():
             print(f"   record {rid}:")
             for k, v in fields.items():
                 print(f"     {k}: {v[:40]!r}")
-        return
+        sys.exit(2 if skipped else 0)
 
     if not to_update:
         print("\n没有需要写入的行。")
