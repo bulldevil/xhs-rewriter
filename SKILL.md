@@ -73,6 +73,7 @@ description: 当用户要围绕当前产品高还原改写一条或多条小红�
 10. **HTML 一律由脚本生成**：产品卡 HTML 与索引页 `products/index.html` 都只允许跑 `scripts/build_product_html.py` 生成，禁止手写整页 HTML；事实只来自产品卡。
 11. **建档/改卡必同步索引**：任何「建卡 / 删卡 / 改 slug / 改一句话定位 / 改价格 / 改主题色」之后，必须跑 `scripts/build_product_html.py --index`（或 `--all`）重生成 `products/index.html`，否则索引页会漏卡或残留旧信息。改 `_index.md` 是必要的，但不等于 `index.html` 已更新。
 12. **修订已产出内容只走数据源重建**：产品卡事实变更后，改对应 `output/_tmp/<批次>.json`（锚点列不动），重建 CSV 并重跑机械校验；不要另写替换脚本生成 CSV。
+13. **语义复核由 agent 直接做**：机械校验通过后，由 agent 直接读 CSV 做语义复核（维度见 `references/note-pipeline.md`）；结论只进汇报、不改机械判定、不写 CSV。禁止为语义复核写脚本或调用外部 LLM API。
 
 ## 飞书上传（可选步骤）
 
