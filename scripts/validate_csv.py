@@ -62,6 +62,7 @@ def cmd_check(args):
         all_rows = list(csv.reader(f))
 
     no_title_rows = []
+    no_body_rows = []
 
     if not all_rows:
         problems.append("文件为空")
@@ -84,10 +85,19 @@ def cmd_check(args):
                     if not r[idx].strip():
                         problems.append(
                             f"第{i}行：源笔记无标题（「对标标题」留空），但「{COLUMNS[idx]}」未据正文补齐")
+            bare_body = not r[3].strip()
+            if bare_body:
+                no_body_rows.append(i)
+                for idx in (4, 5):
+                    if not r[idx].strip():
+                        problems.append(
+                            f"第{i}行：源笔记无正文（「对标正文」留空），但「{COLUMNS[idx]}」未据标题+产品卡补齐")
             for c, v in zip(COLUMNS, r):
                 if v.strip():
                     continue
                 if bare_title and c == "对标标题":
+                    continue
+                if bare_body and c == "对标正文":
                     continue
                 problems.append(f"第{i}行：「{c}」为空")
 
@@ -99,7 +109,12 @@ def cmd_check(args):
         for x in problems:
             print("  -", x)
         sys.exit(1)
-    hint = f"，其中 {len(no_title_rows)} 行源笔记无标题（「对标标题」留空，「标题1/标题2」已据正文补齐）" if no_title_rows else ""
+    hints = []
+    if no_title_rows:
+        hints.append(f"{len(no_title_rows)} 行源笔记无标题（「对标标题」留空，「标题1/标题2」已据正文补齐）")
+    if no_body_rows:
+        hints.append(f"{len(no_body_rows)} 行源笔记无正文（「对标正文」留空，「正文1/正文2」已据标题+产品卡补齐）")
+    hint = "，其中 " + "；".join(hints) if hints else ""
     print(f"✅ 校验通过：{n_data} 行 × 6 列，表头正确，无意外空单元格{hint}")
 
 
